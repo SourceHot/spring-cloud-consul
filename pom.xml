@@ -52,6 +52,7 @@
 		<module>spring-cloud-starter-consul-discovery</module>
 		<module>spring-cloud-starter-consul-all</module>
 		<module>docs</module>
+		<module>consul-example</module>
 	</modules>
 
 	<build>
@@ -69,23 +70,23 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>io.spring.javaformat</groupId>
-				<artifactId>spring-javaformat-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>io.spring.javaformat</groupId>-->
+<!--				<artifactId>spring-javaformat-maven-plugin</artifactId>-->
+<!--			</plugin>-->
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-checkstyle-plugin</artifactId>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
 
 	<reporting>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-checkstyle-plugin</artifactId>-->
+<!--			</plugin>-->
 		</plugins>
 	</reporting>
 
