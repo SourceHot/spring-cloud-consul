@@ -38,8 +38,14 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
  */
 public class ConsulDiscoveryClient implements DiscoveryClient {
 
+	/**
+	 * consul客户端
+	 */
 	private final ConsulClient client;
 
+	/**
+	 * consul服务发现和注册的配置
+	 */
 	private final ConsulDiscoveryProperties properties;
 
 	public ConsulDiscoveryClient(ConsulClient client, ConsulDiscoveryProperties properties) {
@@ -49,33 +55,45 @@ public class ConsulDiscoveryClient implements DiscoveryClient {
 
 	@Override
 	public String description() {
+		// 描述
 		return "Spring Cloud Consul Discovery Client";
 	}
 
 	@Override
 	public List<ServiceInstance> getInstances(final String serviceId) {
+		// 通过getInstances方法获取服务实例集合
 		return getInstances(serviceId, new QueryParams(this.properties.getConsistencyMode()));
 	}
 
 	public List<ServiceInstance> getInstances(final String serviceId, final QueryParams queryParams) {
+		// 创建实例集合
 		List<ServiceInstance> instances = new ArrayList<>();
 
+		// 搜索并且向实例集合中加入数据
 		addInstancesToList(instances, serviceId, queryParams);
 
+		// 返回实例集合
 		return instances;
 	}
 
+
 	private void addInstancesToList(List<ServiceInstance> instances, String serviceId, QueryParams queryParams) {
+		// 创建请求构造器对象
 		HealthServicesRequest.Builder requestBuilder = HealthServicesRequest.newBuilder()
-				.setPassing(properties.isQueryPassing()).setQueryParams(queryParams).setToken(properties.getAclToken());
+			.setPassing(properties.isQueryPassing()).setQueryParams(queryParams).setToken(properties.getAclToken());
+		// consul服务发现和注册的配置中获取服务id的标签集合
 		String[] queryTags = properties.getQueryTagsForService(serviceId);
+		// 标签集合不为空的情况下向查询构造器设置标签集合
 		if (queryTags != null) {
 			requestBuilder.setTags(queryTags);
 		}
+		// 构建请求对象
 		HealthServicesRequest request = requestBuilder.build();
 
+		// 发送请求
 		Response<List<HealthService>> services = this.client.getHealthServices(serviceId, request);
 
+		// 处理响应结果将其放入到服务实例对象集合中
 		for (HealthService service : services.getValue()) {
 			instances.add(new ConsulServiceInstance(service, serviceId));
 		}
@@ -94,8 +112,10 @@ public class ConsulDiscoveryClient implements DiscoveryClient {
 
 	@Override
 	public List<String> getServices() {
+		// 创建请求对象
 		CatalogServicesRequest request = CatalogServicesRequest.newBuilder().setQueryParams(QueryParams.DEFAULT)
-				.setToken(this.properties.getAclToken()).build();
+			.setToken(this.properties.getAclToken()).build();
+		// 请求后将请求 结果返回
 		return new ArrayList<>(this.client.getCatalogServices(request).getValue().keySet());
 	}
 

@@ -39,6 +39,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 /**
+ * consul 数据查看器
  * @author Spencer Gibb
  */
 public class ConsulCatalogWatch implements ApplicationEventPublisherAware, SmartLifecycle {
@@ -94,6 +95,7 @@ public class ConsulCatalogWatch implements ApplicationEventPublisherAware, Smart
 	@Override
 	public void start() {
 		if (this.running.compareAndSet(false, true)) {
+			// 定时任务
 			this.watchFuture = this.taskScheduler.scheduleWithFixedDelay(this::catalogServicesWatch,
 					this.properties.getCatalogServicesWatchDelay());
 		}
@@ -102,6 +104,7 @@ public class ConsulCatalogWatch implements ApplicationEventPublisherAware, Smart
 	@Override
 	public void stop() {
 		if (this.running.compareAndSet(true, false) && this.watchFuture != null) {
+			// 关闭定时任务
 			this.watchFuture.cancel(true);
 		}
 	}
@@ -119,16 +122,20 @@ public class ConsulCatalogWatch implements ApplicationEventPublisherAware, Smart
 	@Timed("consul.watch-catalog-services")
 	public void catalogServicesWatch() {
 		try {
+			// 确认索引数据
 			long index = -1;
 			if (this.catalogServicesIndex.get() != null) {
 				index = this.catalogServicesIndex.get().longValue();
 			}
 
+			// 构件请求
 			CatalogServicesRequest request = CatalogServicesRequest.newBuilder()
 					.setQueryParams(new QueryParams(this.properties.getCatalogServicesWatchTimeout(), index))
 					.setToken(this.properties.getAclToken()).build();
 			Response<Map<String, List<String>>> response = this.consul.getCatalogServices(request);
+			// 获取当前索引
 			Long consulIndex = response.getConsulIndex();
+			// 在当前索引存在的情况下设置索引
 			if (consulIndex != null) {
 				this.catalogServicesIndex.set(BigInteger.valueOf(consulIndex));
 			}
@@ -136,6 +143,7 @@ public class ConsulCatalogWatch implements ApplicationEventPublisherAware, Smart
 			if (log.isTraceEnabled()) {
 				log.trace("Received services update from consul: " + response.getValue() + ", index: " + consulIndex);
 			}
+			// 推送事件
 			this.publisher.publishEvent(new HeartbeatEvent(this, consulIndex));
 		}
 		catch (Exception e) {

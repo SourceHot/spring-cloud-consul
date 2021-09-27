@@ -30,6 +30,9 @@ import static org.springframework.cloud.consul.discovery.ConsulServerUtils.findH
 
 public class ConsulServiceInstance extends DefaultServiceInstance {
 
+	/**
+	 * consul中的健康服务对象
+	 */
 	private HealthService healthService;
 
 	public ConsulServiceInstance(HealthService healthService, String serviceId) {
