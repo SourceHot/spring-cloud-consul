@@ -52,7 +52,9 @@ public class ConsulAutoServiceRegistration extends AbstractAutoServiceRegistrati
 
 	@Override
 	protected ConsulAutoRegistration getRegistration() {
+		// 确认端口是否存在
 		if (this.registration.getService().getPort() == null && this.getPort().get() > 0) {
+			// 设置端口信息和检查对象
 			this.registration.initializePort(this.getPort().get());
 		}
 		Assert.notNull(this.registration.getService().getPort(), "service.port has not been set");
@@ -72,6 +74,7 @@ public class ConsulAutoServiceRegistration extends AbstractAutoServiceRegistrati
 
 	@Override
 	protected void register() {
+		// 判断是否注册，如果已经注册跳过处理
 		if (!this.properties.isRegister()) {
 			log.debug("Registration disabled.");
 			return;

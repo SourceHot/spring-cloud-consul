@@ -63,6 +63,7 @@ public class TtlScheduler {
 
 	public void add(final NewService service) {
 		add(service.getId());
+		// 向服务容器加入数据
 		this.registeredServices.put(service.getId(), service);
 	}
 
@@ -71,9 +72,12 @@ public class TtlScheduler {
 	 * @param instanceId instance id
 	 */
 	public void add(String instanceId) {
+		// 创建定时任务
 		ScheduledFuture task = this.scheduler.scheduleAtFixedRate(new ConsulHeartbeatTask(instanceId, this),
-				this.heartbeatProperties.computeHeartbeatInterval().toMillis());
+			this.heartbeatProperties.computeHeartbeatInterval().toMillis());
+		// 定时任务容器中加入数据
 		ScheduledFuture previousTask = this.serviceHeartbeats.put(instanceId, task);
+		// 定时任务中存在数据则进行cancel方法调度
 		if (previousTask != null) {
 			previousTask.cancel(true);
 		}

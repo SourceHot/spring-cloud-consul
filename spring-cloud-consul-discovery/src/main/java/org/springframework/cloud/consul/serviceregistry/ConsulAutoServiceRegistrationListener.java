@@ -47,16 +47,21 @@ public class ConsulAutoServiceRegistrationListener implements SmartApplicationLi
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent applicationEvent) {
+		// 确认事件类型是否是WebServerInitializedEvent
 		if (applicationEvent instanceof WebServerInitializedEvent) {
+			// 类型转换
 			WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
-
+			// 获取应用上下文
 			ApplicationContext context = event.getApplicationContext();
+			// 如果应用上下文类型是ConfigurableWebServerApplicationContext，并且命名空间是management则跳过处理
 			if (context instanceof ConfigurableWebServerApplicationContext) {
 				if ("management".equals(((ConfigurableWebServerApplicationContext) context).getServerNamespace())) {
 					return;
 				}
 			}
+			// 设置端口
 			this.autoServiceRegistration.setPortIfNeeded(event.getWebServer().getPort());
+			// 启动
 			this.autoServiceRegistration.start();
 		}
 	}

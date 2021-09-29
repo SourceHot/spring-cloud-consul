@@ -16,14 +16,7 @@
 
 package org.springframework.cloud.consul.discovery;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.ecwid.consul.v1.ConsistencyMode;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.commons.util.InetUtils;
@@ -33,8 +26,11 @@ import org.springframework.core.style.ToStringCreator;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import java.util.*;
+
 /**
  * Defines configuration for service discovery and registration.
+ * consul 服务注册发现配置
  *
  * @author Spencer Gibb
  * @author Donnabell Dmello
@@ -56,40 +52,64 @@ public class ConsulDiscoveryProperties {
 	@Value("${consul.token:${CONSUL_TOKEN:${spring.cloud.consul.token:${SPRING_CLOUD_CONSUL_TOKEN:}}}}")
 	private String aclToken;
 
-	/** Tags to use when registering service. */
+	/**
+	 * Tags to use when registering service.
+	 */
 	private List<String> tags = new ArrayList<>();
 
-	/** Metadata to use when registering service. */
+	/**
+	 * Metadata to use when registering service.
+	 */
 	private Map<String, String> metadata = new LinkedHashMap<>();
 
-	/** Enable tag override for the registered service. */
+	/**
+	 * Enable tag override for the registered service.
+	 */
 	private Boolean enableTagOverride;
 
-	/** Is service discovery enabled? */
+	/**
+	 * Is service discovery enabled?
+	 */
 	private boolean enabled = true;
 
-	/** Tags to use when registering management service. */
+	/**
+	 * Tags to use when registering management service.
+	 */
 	private List<String> managementTags = new ArrayList<>();
 
-	/** Enable tag override for the registered management service. */
+	/**
+	 * Enable tag override for the registered management service.
+	 */
 	private Boolean managementEnableTagOverride;
 
-	/** Metadata to use when registering management service. */
+	/**
+	 * Metadata to use when registering management service.
+	 */
 	private Map<String, String> managementMetadata;
 
-	/** Alternate server path to invoke for health checking. */
+	/**
+	 * Alternate server path to invoke for health checking.
+	 */
 	private String healthCheckPath = "/actuator/health";
 
-	/** Custom health check url to override default. */
+	/**
+	 * Custom health check url to override default.
+	 */
 	private String healthCheckUrl;
 
-	/** Headers to be applied to the Health Check calls. */
+	/**
+	 * Headers to be applied to the Health Check calls.
+	 */
 	private Map<String, List<String>> healthCheckHeaders = new HashMap<>();
 
-	/** How often to perform the health check (e.g. 10s), defaults to 10s. */
+	/**
+	 * How often to perform the health check (e.g. 10s), defaults to 10s.
+	 */
 	private String healthCheckInterval = "10s";
 
-	/** Timeout for health check (e.g. 10s). */
+	/**
+	 * Timeout for health check (e.g. 10s).
+	 */
 	private String healthCheckTimeout;
 
 	/**
@@ -103,39 +123,61 @@ public class ConsulDiscoveryProperties {
 	 */
 	private String ipAddress;
 
-	/** Hostname to use when accessing server. */
+	/**
+	 * Hostname to use when accessing server.
+	 */
 	private String hostname;
 
-	/** Port to register the service under (defaults to listening port). */
+	/**
+	 * Port to register the service under (defaults to listening port).
+	 */
 	private Integer port;
 
-	/** Port to register the management service under (defaults to management port). */
+	/**
+	 * Port to register the management service under (defaults to management port).
+	 */
 	private Integer managementPort;
 
 	private Lifecycle lifecycle = new Lifecycle();
 
-	/** Use ip address rather than hostname during registration. */
+	/**
+	 * Use ip address rather than hostname during registration.
+	 */
 	private boolean preferIpAddress = false;
 
-	/** Source of how we will determine the address to use. */
+	/**
+	 * Source of how we will determine the address to use.
+	 */
 	private boolean preferAgentAddress = false;
 
-	/** The delay between calls to watch consul catalog in millis, default is 1000. */
+	/**
+	 * The delay between calls to watch consul catalog in millis, default is 1000.
+	 */
 	private int catalogServicesWatchDelay = 1000;
 
-	/** The number of seconds to block while watching consul catalog, default is 2. */
+	/**
+	 * The number of seconds to block while watching consul catalog, default is 2.
+	 */
 	private int catalogServicesWatchTimeout = 2;
 
-	/** Service name. */
+	/**
+	 * Service name.
+	 */
 	private String serviceName;
 
-	/** Unique service instance id. */
+	/**
+	 * Unique service instance id.
+	 */
 	private String instanceId;
 
-	/** Service instance zone. */
+	/**
+	 * Service instance zone.
+	 */
 	private String instanceZone;
 
-	/** Service instance group. */
+	/**
+	 * Service instance group.
+	 */
 	private String instanceGroup;
 
 	/**
@@ -154,10 +196,14 @@ public class ConsulDiscoveryProperties {
 	 */
 	private String defaultZoneMetadataName = "zone";
 
-	/** Whether to register an http or https service. */
+	/**
+	 * Whether to register an http or https service.
+	 */
 	private String scheme = "http";
 
-	/** Suffix to use when registering management service. */
+	/**
+	 * Suffix to use when registering management service.
+	 */
 	private String managementSuffix = MANAGEMENT;
 
 	/**
@@ -185,13 +231,19 @@ public class ConsulDiscoveryProperties {
 	 */
 	private boolean queryPassing = false;
 
-	/** Register as a service in consul. */
+	/**
+	 * Register as a service in consul.
+	 */
 	private boolean register = true;
 
-	/** Disable automatic de-registration of service in consul. */
+	/**
+	 * Disable automatic de-registration of service in consul.
+	 */
 	private boolean deregister = true;
 
-	/** Register health check in consul. Useful during development of a service. */
+	/**
+	 * Register health check in consul. Useful during development of a service.
+	 */
 	private boolean registerHealthCheck = true;
 
 	/**
@@ -228,6 +280,7 @@ public class ConsulDiscoveryProperties {
 	 * Gets the tag to use when looking up the instances for a particular service. If the
 	 * service has an entry in {@link #serverListQueryTags} that will be used. Otherwise
 	 * the content of {@link #defaultQueryTag} will be used.
+	 *
 	 * @param serviceId the service whose instances are being looked up
 	 * @return the tag to filter the service instances by or null if no tags are
 	 * configured for the service and the default query tag is not configured
@@ -249,6 +302,7 @@ public class ConsulDiscoveryProperties {
 	 * <p>
 	 * The expected format of the tag property value is {@code tag1,tag2,..,tagN}.
 	 * Whitespace will be trimmed off each entry.
+	 *
 	 * @param serviceId the service whose instances are being looked up
 	 * @return the array of tags to filter the service instances by - it will be null if
 	 * no tags are configured for the service and the default query tag is not configured
@@ -298,10 +352,6 @@ public class ConsulDiscoveryProperties {
 
 	public boolean isEnableTagOverride() {
 		return enableTagOverride;
-	}
-
-	public void setEnableTagOverride(boolean enableTagOverride) {
-		this.enableTagOverride = enableTagOverride;
 	}
 
 	public Map<String, String> getMetadata() {
@@ -605,6 +655,10 @@ public class ConsulDiscoveryProperties {
 		return this.enableTagOverride;
 	}
 
+	public void setEnableTagOverride(boolean enableTagOverride) {
+		this.enableTagOverride = enableTagOverride;
+	}
+
 	public void setEnableTagOverride(Boolean enableTagOverride) {
 		this.enableTagOverride = enableTagOverride;
 	}
@@ -620,32 +674,32 @@ public class ConsulDiscoveryProperties {
 	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("aclToken", this.aclToken)
-				.append("catalogServicesWatchDelay", this.catalogServicesWatchDelay)
-				.append("catalogServicesWatchTimeout", this.catalogServicesWatchTimeout)
-				.append("consistencyMode", this.consistencyMode).append("datacenters", this.datacenters)
-				.append("defaultQueryTag", this.defaultQueryTag)
-				.append("defaultZoneMetadataName", this.defaultZoneMetadataName).append("deregister", this.deregister)
-				.append("enabled", this.enabled).append("enableTagOverride", this.enableTagOverride)
-				.append("failFast", this.failFast).append("hostInfo", this.hostInfo)
-				.append("healthCheckCriticalTimeout", this.healthCheckCriticalTimeout)
-				.append("healthCheckHeaders", this.healthCheckHeaders)
-				.append("healthCheckInterval", this.healthCheckInterval).append("healthCheckPath", this.healthCheckPath)
-				.append("healthCheckTimeout", this.healthCheckTimeout)
-				.append("healthCheckTlsSkipVerify", this.healthCheckTlsSkipVerify)
-				.append("healthCheckUrl", this.healthCheckUrl).append("hostname", this.hostname)
-				.append("includeHostnameInInstanceId", this.includeHostnameInInstanceId)
-				.append("instanceId", this.instanceId).append("instanceGroup", this.instanceGroup)
-				.append("instanceZone", this.instanceZone).append("ipAddress", this.ipAddress)
-				.append("lifecycle", this.lifecycle).append("metadata", this.metadata)
-				.append("managementEnableTagOverride", this.managementEnableTagOverride)
-				.append("managementMetadata", this.managementMetadata).append("managementPort", this.managementPort)
-				.append("managementSuffix", this.managementSuffix).append("managementTags", this.managementTags)
-				.append("order", this.order).append("port", this.port)
-				.append("preferAgentAddress", this.preferAgentAddress).append("preferIpAddress", this.preferIpAddress)
-				.append("queryPassing", this.queryPassing).append("register", this.register)
-				.append("registerHealthCheck", this.registerHealthCheck).append("scheme", this.scheme)
-				.append("serviceName", this.serviceName).append("serverListQueryTags", this.serverListQueryTags)
-				.append("tags", this.tags).toString();
+			.append("catalogServicesWatchDelay", this.catalogServicesWatchDelay)
+			.append("catalogServicesWatchTimeout", this.catalogServicesWatchTimeout)
+			.append("consistencyMode", this.consistencyMode).append("datacenters", this.datacenters)
+			.append("defaultQueryTag", this.defaultQueryTag)
+			.append("defaultZoneMetadataName", this.defaultZoneMetadataName).append("deregister", this.deregister)
+			.append("enabled", this.enabled).append("enableTagOverride", this.enableTagOverride)
+			.append("failFast", this.failFast).append("hostInfo", this.hostInfo)
+			.append("healthCheckCriticalTimeout", this.healthCheckCriticalTimeout)
+			.append("healthCheckHeaders", this.healthCheckHeaders)
+			.append("healthCheckInterval", this.healthCheckInterval).append("healthCheckPath", this.healthCheckPath)
+			.append("healthCheckTimeout", this.healthCheckTimeout)
+			.append("healthCheckTlsSkipVerify", this.healthCheckTlsSkipVerify)
+			.append("healthCheckUrl", this.healthCheckUrl).append("hostname", this.hostname)
+			.append("includeHostnameInInstanceId", this.includeHostnameInInstanceId)
+			.append("instanceId", this.instanceId).append("instanceGroup", this.instanceGroup)
+			.append("instanceZone", this.instanceZone).append("ipAddress", this.ipAddress)
+			.append("lifecycle", this.lifecycle).append("metadata", this.metadata)
+			.append("managementEnableTagOverride", this.managementEnableTagOverride)
+			.append("managementMetadata", this.managementMetadata).append("managementPort", this.managementPort)
+			.append("managementSuffix", this.managementSuffix).append("managementTags", this.managementTags)
+			.append("order", this.order).append("port", this.port)
+			.append("preferAgentAddress", this.preferAgentAddress).append("preferIpAddress", this.preferIpAddress)
+			.append("queryPassing", this.queryPassing).append("register", this.register)
+			.append("registerHealthCheck", this.registerHealthCheck).append("scheme", this.scheme)
+			.append("serviceName", this.serviceName).append("serverListQueryTags", this.serverListQueryTags)
+			.append("tags", this.tags).toString();
 	}
 
 	/**

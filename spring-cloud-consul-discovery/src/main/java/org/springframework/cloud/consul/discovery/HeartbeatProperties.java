@@ -31,7 +31,7 @@ import org.springframework.validation.annotation.Validated;
 
 /**
  * Properties related to hearbeat verification.
- *
+ * 与心跳验证相关的属性
  * @author Spencer Gibb
  */
 @ConfigurationProperties(prefix = "spring.cloud.consul.discovery.heartbeat")

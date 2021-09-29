@@ -30,8 +30,14 @@ import org.springframework.cloud.consul.discovery.ConsulDiscoveryProperties;
  */
 public class ConsulRegistration implements Registration {
 
+	/**
+	 *  consul服务对象
+	 */
 	private final NewService service;
 
+	/**
+	 * consul服务注册发现配置
+	 */
 	private ConsulDiscoveryProperties properties;
 
 	public ConsulRegistration(NewService service, ConsulDiscoveryProperties properties) {

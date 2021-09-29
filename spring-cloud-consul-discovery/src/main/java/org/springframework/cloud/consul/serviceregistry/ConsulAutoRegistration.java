@@ -43,15 +43,24 @@ public class ConsulAutoRegistration extends ConsulRegistration {
 
 	/**
 	 * Instance ID separator.
+	 * 分隔符
 	 */
 	public static final char SEPARATOR = '-';
-
+	/**
+	 * 自动服务注册属性
+	 */
 	private final AutoServiceRegistrationProperties autoServiceRegistrationProperties;
-
+	/**
+	 * 应用上下文
+	 */
 	private final ApplicationContext context;
-
+	/**
+	 * 与心跳验证相关的属性
+	 */
 	private final HeartbeatProperties heartbeatProperties;
-
+	/**
+	 * consul服务定制器
+	 */
 	private final List<ConsulManagementRegistrationCustomizer> managementRegistrationCustomizers;
 
 	@Deprecated
@@ -73,32 +82,50 @@ public class ConsulAutoRegistration extends ConsulRegistration {
 		this.managementRegistrationCustomizers = managementRegistrationCustomizers;
 	}
 
+
+	/**
+	 * 服务注册
+	 */
 	public static ConsulAutoRegistration registration(
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties, ConsulDiscoveryProperties properties,
 			ApplicationContext context, List<ConsulRegistrationCustomizer> registrationCustomizers,
 			List<ConsulManagementRegistrationCustomizer> managementRegistrationCustomizers,
 			HeartbeatProperties heartbeatProperties) {
 
+		// 创建consul服务对象
 		NewService service = new NewService();
+		// 确认应用名称
 		String appName = getAppName(properties, context.getEnvironment());
+		// 设置服务id
 		service.setId(getInstanceId(properties, context));
+		// 存在网络地址的情况下设置网络地址
 		if (!properties.isPreferAgentAddress()) {
 			service.setAddress(properties.getHostname());
 		}
+		// 设置服务名称
 		service.setName(normalizeForDns(appName));
+		// 设置tag数据
 		service.setTags(new ArrayList<>(properties.getTags()));
+		// 设置是否启用标签覆盖
 		service.setEnableTagOverride(properties.getEnableTagOverride());
+		// 设置元数据
 		service.setMeta(getMetadata(properties));
 
+		// 端口不为空的情况下
 		if (properties.getPort() != null) {
+			// 设置端口
 			service.setPort(properties.getPort());
 			// we know the port and can set the check
+			// 设置检查对象
 			setCheck(service, autoServiceRegistrationProperties, properties, context, heartbeatProperties);
 		}
 
+		// 创建ConsulAutoRegistration对象
 		ConsulAutoRegistration registration = new ConsulAutoRegistration(service, autoServiceRegistrationProperties,
-				properties, context, heartbeatProperties, managementRegistrationCustomizers);
+			properties, context, heartbeatProperties, managementRegistrationCustomizers);
+		// 定制ConsulAutoRegistration对象
 		customize(registrationCustomizers, registration);
+		// 返回ConsulAutoRegistration对象
 		return registration;
 	}
 
@@ -126,24 +153,39 @@ public class ConsulAutoRegistration extends ConsulRegistration {
 		}
 	}
 
+	/**
+	 * 管理服务注册
+	 */
 	public static ConsulAutoRegistration managementRegistration(
 			AutoServiceRegistrationProperties autoServiceRegistrationProperties, ConsulDiscoveryProperties properties,
 			ApplicationContext context, List<ConsulManagementRegistrationCustomizer> managementRegistrationCustomizers,
 			HeartbeatProperties heartbeatProperties) {
+		// 创建consul服务对象
 		NewService management = new NewService();
+		// 设置服务id
 		management.setId(getManagementServiceId(properties, context));
+		// 设置网路地址
 		management.setAddress(properties.getHostname());
+		// 设置名称
 		management.setName(getManagementServiceName(properties, context.getEnvironment()));
+		// 设置端口
 		management.setPort(getManagementPort(properties, context));
+		// 设置tag
 		management.setTags(properties.getManagementTags());
+		// 设置是否启动标签覆盖
 		management.setEnableTagOverride(properties.getManagementEnableTagOverride());
+		// 设置元数据
 		management.setMeta(properties.getManagementMetadata());
+		// 确认是否需要进行健康检查，如果需要将设置检查对象
 		if (properties.isRegisterHealthCheck()) {
 			management.setCheck(createCheck(getManagementPort(properties, context), heartbeatProperties, properties));
 		}
+		// 创建ConsulAutoRegistration对象
 		ConsulAutoRegistration registration = new ConsulAutoRegistration(management, autoServiceRegistrationProperties,
-				properties, context, heartbeatProperties, managementRegistrationCustomizers);
+			properties, context, heartbeatProperties, managementRegistrationCustomizers);
+		// 自定义ConsulAutoRegistration对象
 		managementCustomize(managementRegistrationCustomizers, registration);
+		// 返回ConsulAutoRegistration对象
 		return registration;
 	}
 
